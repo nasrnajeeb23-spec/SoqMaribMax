@@ -1,0 +1,31 @@
+{
+  "short_name": "سوق مارب",
+  "name": "سوق مارب | SouqMarib Open Marketplace",
+  "lang": "ar",
+  "dir": "rtl",
+  "description": "منصة سوق مفتوح لعرض وبيع السلع والخدمات في اليمن. تصفح، تواصل، واشترِ بكل سهولة وأمان.",
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#0284c7",
+  "background_color": "#f1f5f9"
+}

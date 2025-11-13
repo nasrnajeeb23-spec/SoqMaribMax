@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0284c7" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>سوق مارب | كل شيء في مدينتك</title>
+    <script>
+      (function() {
+        function getInitialTheme() {
+          try {
+            const storedPrefs = window.localStorage.getItem('souqmarib_theme');
+            if (typeof storedPrefs === 'string') return storedPrefs;
+            const userMedia = window.matchMedia('(prefers-color-scheme: dark)');
+            if (userMedia.matches) return 'dark';
+          } catch (e) { /* ignore */ }
+          return 'light';
+        }
+        const theme = getInitialTheme();
+        document.documentElement.className = theme;
+      })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <style>
+      :root {
+        --color-primary: #0284c7; /* Sky 600 */
+        --color-primary-hover: #0369a1; /* Sky 700 */
+        --color-primary-light: #f0f9ff; /* Sky 50 */
+        --color-accent: #facc15; /* Amber 400 */
+        --color-accent-hover: #f59e0b; /* Amber 500 */
+        --color-background: #f1f5f9; /* Slate 100 */
+        --color-surface: #ffffff;
+        --color-text-base: #334155; /* Slate 700 */
+        --color-text-muted: #64748b; /* Slate 500 */
+        --color-border: #e2e8f0; /* Slate 200 */
+        --font-sans: 'Tajawal', sans-serif;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --rounded-lg: 0.5rem;
+        --rounded-xl: 0.75rem;
+      }
+      html.dark {
+        color-scheme: dark;
+        --color-primary: #0ea5e9; /* Sky 500 */
+        --color-primary-hover: #0284c7; /* Sky 600 */
+        --color-primary-light: #1e293b; /* Slate 800 */
+        --color-accent: #facc15; /* Amber 400 */
+        --color-accent-hover: #eab308; /* Amber 500 */
+        --color-background: #0f172a; /* Slate 900 */
+        --color-surface: #1e293b; /* Slate 800 */
+        --color-text-base: #e2e8f0; /* Slate 200 */
+        --color-text-muted: #94a3b8; /* Slate 400 */
+        --color-border: #334155; /* Slate 700 */
+
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+      }
+      body {
+        font-family: var(--font-sans);
+        background-color: var(--color-background);
+        color: var(--color-text-base);
+      }
+      @media print {
+        html.dark {
+          --color-background: #ffffff;
+          --color-surface: #ffffff;
+          --color-text-base: #000000;
+          --color-text-muted: #333333;
+          --color-border: #eeeeee;
+        }
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        header, footer, .no-print, nav, aside {
+          display: none !important;
+        }
+        main {
+          padding: 0 !important;
+          margin: 0 !important;
+          min-height: auto !important;
+        }
+        .invoice-container {
+          box-shadow: none !important;
+          border: none !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          width: 100%;
+          max-width: 100%;
+        }
+      }
+      /* Responsive table styles */
+      @media (max-width: 767px) {
+        .responsive-table thead {
+          display: none;
+        }
+        .responsive-table, .responsive-table tbody, .responsive-table tr, .responsive-table td {
+          display: block;
+          width: 100%;
+        }
+        .responsive-table tr {
+          margin-bottom: 1.5rem;
+          border: 1px solid var(--color-border);
+          border-radius: var(--rounded-lg);
+          overflow: hidden;
+          box-shadow: var(--shadow-sm);
+        }
+        .responsive-table td {
+          padding: 0.75rem 1rem;
+          text-align: left; /* Corresponds to padding-right for label */
+          position: relative;
+          padding-right: 50%;
+          border-bottom: 1px solid var(--color-border);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .responsive-table td:last-child {
+          border-bottom: none;
+        }
+        .responsive-table td::before {
+          content: attr(data-label);
+          position: absolute;
+          right: 0;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 45%;
+          padding-right: 1rem;
+          font-weight: 700;
+          color: var(--color-text-muted);
+          text-align: right;
+        }
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.5",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "framer-motion": "https://aistudiocdn.com/framer-motion@^11.3.11",
+    "recharts": "https://aistudiocdn.com/recharts@^2.12.7",
+    "zustand": "https://aistudiocdn.com/zustand@^4.5.4",
+    "zustand/middleware": "https://aistudiocdn.com/zustand@^4.5.4/middleware.js",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^0.15.0",
+    "zustand/": "https://aistudiocdn.com/zustand@^5.0.8/",
+    "qrcode": "https://cdn.jsdelivr.net/npm/qrcode@1.5.3/+esm"
+  }
+}
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+<script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+</head>
+  <body>
+    <div id="root"></div>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js').then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }, err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
