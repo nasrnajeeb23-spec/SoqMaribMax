@@ -15,7 +15,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
 } else {
   // --- وضع الإنتاج (النشر) ---
   // عند نشر التطبيق على Vercel، سيستخدم هذا الرابط تلقائياً للاتصال بالخادم الخلفي.
-  API_URL = 'https://souqmarib-backend.onrender.com/api';
+  API_URL = 'https://soqmaribmax.onrender.com/api';
   console.log('Running in production mode. API is at:', API_URL);
 }
 
