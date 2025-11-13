@@ -1,23 +1,11 @@
 import { Product, User, Category, ServiceCategory, Delivery, Payment, Review, Advertisement, UserRating, Service, ServiceBooking, ServiceReview, CommunityPost, PostComment, Offer, PayoutTransaction, Message, Conversation, Store } from '../types';
 
 // ===================================================================================
-// تحديد رابط الـ API بشكل ديناميكي
-// هذا الكود يتحقق من بيئة التشغيل لتحديد الرابط الصحيح للخادم الخلفي.
+// تحديد رابط الـ API
+// تم تعديل الرابط ليتصل بالخادم السحابي مباشرة لتسهيل عملية التطوير.
 // ===================================================================================
-let API_URL: string;
-
-if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-  // --- وضع التطوير المحلي ---
-  // عند تشغيل التطبيق على جهازك، سيتصل بالخادم الخلفي المحلي.
-  // تأكد من تشغيل الخادم الخلفي باتباع التعليمات في README.md
-  API_URL = 'http://localhost:4000/api';
-  console.log('Running in development mode. API is at:', API_URL);
-} else {
-  // --- وضع الإنتاج (النشر) ---
-  // عند نشر التطبيق على Vercel، سيستخدم هذا الرابط تلقائياً للاتصال بالخادم الخلفي.
-  API_URL = 'https://soqmaribmax.onrender.com/api';
-  console.log('Running in production mode. API is at:', API_URL);
-}
+const API_URL = 'https://soqmaribmax.onrender.com/api';
+console.log('API is configured to connect to:', API_URL);
 
 
 const handleResponse = async (response: Response) => {
