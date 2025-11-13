@@ -1,7 +1,6 @@
 {
   "name": "souqmarib-fullstack",
   "version": "1.0.0",
-  "type": "module",
   "description": "Fullstack application for SouqMarib",
   "scripts": {
     "start": "node backend-server.js",
@@ -9,10 +8,14 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@google/genai": "^0.15.0",
+    "@types/leaflet": "^1.9.12",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "framer-motion": "^11.3.11",
-    "@google/genai": "^0.15.0",
     "leaflet": "^1.9.4",
     "leaflet-control-geocoder": "^2.4.0",
     "leaflet-routing-machine": "^3.2.12",
@@ -21,14 +24,9 @@
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.5",
     "recharts": "^2.12.7",
+    "typescript": "^5.5.3",
+    "vite": "^5.3.4",
     "zustand": "^4.5.4"
   },
-  "devDependencies": {
-    "@types/leaflet": "^1.9.12",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "typescript": "^5.5.3",
-    "vite": "^5.3.4"
-  }
+  "devDependencies": {}
 }

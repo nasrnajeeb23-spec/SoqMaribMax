@@ -1,5 +1,5 @@
-import express from 'express';
-import cors from 'cors';
+const express = require('express');
+const cors = require('cors');
 
 const app = express();
 app.use(cors());
@@ -79,20 +79,20 @@ initializeData();
 // --- API Endpoints ---
 const router = express.Router();
 
-// Generic GET all
-const createGetAllEndpoint = (resource) => (req, res) => res.json(data[resource]);
-// Generic POST
-const createPostEndpoint = (resource) => (req, res) => {
+const genericGet = (key) => (req, res) => res.json(data[key]);
+const genericPost = (key) => (req, res) => {
     const newItem = req.body;
-    data[resource].push(newItem);
+    if (!newItem.id) {
+        newItem.id = `${key.slice(0, 4)}-${Date.now()}`;
+    }
+    data[key].push(newItem);
     res.status(201).json(newItem);
 };
-// Generic PATCH
-const createPatchEndpoint = (resource) => (req, res) => {
+const genericPatch = (key) => (req, res) => {
     const { id } = req.params;
     const updatedData = req.body;
     let itemFound = null;
-    data[resource] = data[resource].map(item => {
+    data[key] = data[key].map(item => {
         if (item.id === id) {
             itemFound = { ...item, ...updatedData };
             return itemFound;
@@ -100,56 +100,43 @@ const createPatchEndpoint = (resource) => (req, res) => {
         return item;
     });
     if (itemFound) res.json(itemFound);
-    else res.status(404).json({ message: 'Item not found' });
+    else res.status(404).json({ message: `${key} item not found` });
 };
-// Generic PUT
-const createPutEndpoint = (resource) => (req, res) => {
-     const { id } = req.params;
-    const updatedData = req.body;
-    let itemFound = null;
-    data[resource] = data[resource].map(item => {
-        if (item.id === id) {
-            itemFound = { ...item, ...updatedData };
-            return itemFound;
-        }
-        return item;
-    });
-    if (itemFound) res.json(itemFound);
-    else res.status(404).json({ message: 'Item not found' });
-};
-// Generic DELETE
-const createDeleteEndpoint = (resource) => (req, res) => {
+const genericDelete = (key) => (req, res) => {
     const { id } = req.params;
-    data[resource] = data[resource].filter(item => item.id !== id);
+    data[key] = data[key].filter(item => item.id !== id);
     res.status(204).send();
 };
 
-const resources = ['products', 'users', 'stores', 'deliveries', 'payments', 'payouts', 'reviews', 'ratings', 'ads', 'product-categories', 'service-categories', 'posts', 'comments', 'offers', 'services', 'bookings', 'service-reviews', 'conversations', 'messages'];
-resources.forEach(resource => {
-    const path = `/${resource.replace('-','_')}`;
-    const key = resource.replace(/-/g, '').replace(/s$/, '') + 's'; // a bit of magic to match keys in `data` object
-    
-    // For categories, the key is different
-    let dataKey = resource.replace('-', '');
-    if (dataKey === 'productcategories') dataKey = 'productCategories';
-    if (dataKey === 'servicecategories') dataKey = 'serviceCategories';
-    if (dataKey === 'userratings') dataKey = 'userRatings';
 
-    // A more direct mapping
-    const keyMap = {
-        'product-categories': 'productCategories',
-        'service-categories': 'serviceCategories',
-        'ratings': 'userRatings'
-    };
-    
-    const finalDataKey = keyMap[resource] || resource;
+const setupCrud = (path, key) => {
+    router.get(path, genericGet(key));
+    router.post(path, genericPost(key));
+    router.patch(`${path}/:id`, genericPatch(key));
+    router.put(`${path}/:id`, genericPatch(key)); // PUT is often same as PATCH in mock APIs
+    router.delete(`${path}/:id`, genericDelete(key));
+}
 
-    router.get(`/${resource}`, createGetAllEndpoint(finalDataKey));
-    router.post(`/${resource}`, createPostEndpoint(finalDataKey));
-    router.patch(`/${resource}/:id`, createPatchEndpoint(finalDataKey));
-    router.put(`/${resource}/:id`, createPutEndpoint(finalDataKey));
-    router.delete(`/${resource}/:id`, createDeleteEndpoint(finalDataKey));
-});
+// Setup all CRUD routes
+setupCrud('/products', 'products');
+setupCrud('/users', 'users');
+setupCrud('/stores', 'stores');
+setupCrud('/deliveries', 'deliveries');
+setupCrud('/payments', 'payments');
+setupCrud('/payouts', 'payouts');
+setupCrud('/reviews', 'reviews');
+setupCrud('/ratings', 'userRatings');
+setupCrud('/ads', 'ads');
+setupCrud('/product-categories', 'productCategories');
+setupCrud('/service-categories', 'serviceCategories');
+setupCrud('/posts', 'posts');
+setupCrud('/comments', 'comments');
+setupCrud('/offers', 'offers');
+setupCrud('/services', 'services');
+setupCrud('/bookings', 'bookings');
+setupCrud('/service-reviews', 'serviceReviews');
+setupCrud('/conversations', 'conversations');
+setupCrud('/messages', 'messages');
 
 // Special endpoints
 router.post('/login', (req, res) => {
