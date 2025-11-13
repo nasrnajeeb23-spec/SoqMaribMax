@@ -1,14 +1,24 @@
 import { Product, User, Category, ServiceCategory, Delivery, Payment, Review, Advertisement, UserRating, Service, ServiceBooking, ServiceReview, CommunityPost, PostComment, Offer, PayoutTransaction, Message, Conversation, Store } from '../types';
 
 // ===================================================================================
-// ملاحظة هامة للمطور:
-// هذا هو الرابط الخاص بالخادم الخلفي.
-// للتطوير المحلي، استخدم 'http://localhost:4000/api'.
-// قبل النشر على الإنترنت (Vercel)، يجب استبداله بالرابط الفعلي
-// للخادم الخلفي الذي حصلت عليه من Render.
-// مثال: 'https://souqmarib-backend.onrender.com/api'
+// تحديد رابط الـ API بشكل ديناميكي
+// هذا الكود يتحقق من بيئة التشغيل لتحديد الرابط الصحيح للخادم الخلفي.
 // ===================================================================================
-const API_URL = 'http://localhost:4000/api';
+let API_URL: string;
+
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  // --- وضع التطوير المحلي ---
+  // عند تشغيل التطبيق على جهازك، سيتصل بالخادم الخلفي المحلي.
+  // تأكد من تشغيل الخادم الخلفي باتباع التعليمات في README.md
+  API_URL = 'http://localhost:4000/api';
+  console.log('Running in development mode. API is at:', API_URL);
+} else {
+  // --- وضع الإنتاج (النشر) ---
+  // عند نشر التطبيق على Vercel، سيستخدم هذا الرابط تلقائياً للاتصال بالخادم الخلفي.
+  API_URL = 'https://souqmarib-backend.onrender.com/api';
+  console.log('Running in production mode. API is at:', API_URL);
+}
+
 
 const handleResponse = async (response: Response) => {
     if (!response.ok) {
